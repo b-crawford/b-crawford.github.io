@@ -57,7 +57,7 @@
             <label for="description">Description </label>
             <input type="text" class="form-control" id="description" placeholder="Description (at least 30 characters)" required minlength="30">
           </div>
-          <button type="submit" class="btn btn-primary">Generate Description</button>
+          <button type = 'submit' class="btn btn-primary">Generate Description</button>
         </form>
       </div>
       <div class="row">
@@ -89,7 +89,9 @@
     document.getElementById('issueInputForm').addEventListener('submit', generateDescription);
 
     function generateDescription(e) {
-      var issueId = chance.guid();
+      // prevent the default event handling from happening (a refresh)
+      e.preventDefault();
+      
       var bulletOne = document.getElementById('bulletPointOne').value;
       var bulletTwo = document.getElementById('bulletPointTwo').value;
       var bulletThree = document.getElementById('bulletPointThree').value;
@@ -137,7 +139,6 @@
                                   '</h3>'+'</div>';
       }
 
-      // e.preventDefault();
     }
 
     </script>
