@@ -13,7 +13,7 @@
   </head>
   <body onload="printDescriptions()">
     <div class="container">
-      <h1> Shore description builder</h1>
+      <h1> Description builder</h1>
       <div class="jumbotron">
         <h3>Add New Description:</h3>
         <form id="issueInputForm">
@@ -100,7 +100,7 @@
       var bulletEight = document.getElementById('bulletPointEight').value;
       var description = document.getElementById('description').value;
 
-      var descriptionHTML = document.getElementById('descriptionHTML');
+      // var descriptionHTML = document.getElementById('descriptionHTML');
 
       if (description.length < 30){
         // if the string is too short then print an error
@@ -137,7 +137,7 @@
                                   '</h3>'+'</div>';
       }
 
-      e.preventDefault();
+      // e.preventDefault();
     }
 
     </script>
