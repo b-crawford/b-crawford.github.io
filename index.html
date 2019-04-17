@@ -62,7 +62,7 @@
       </div>
       <div class="row">
         <div class="col-lg-12">
-          <div id="issuesList">
+          <div id="descriptionHTML">
           </div>
         </div>
       </div>
@@ -100,11 +100,13 @@
       var bulletEight = document.getElementById('bulletPointEight').value;
       var description = document.getElementById('description').value;
 
+      var descriptionHTML = document.getElementById('descriptionHTML');
+
       if (description.length < 30){
         // if the string is too short then print an error
         // this should be unnesescary as the bullets are reuiqred fields
         // on the form but this might not work in some browsers
-        issuesList.innerHTML += '<div class="well">'+
+        descriptionHTML.innerHTML += '<div class="well">'+
                                   '<h6>Description too short, it must be 30 characters</h6>'+
                                   '</h3>'+'</div>';
       }
@@ -112,16 +114,22 @@
         // if any of the required bullets are missing then print an error
         // this should be unnesescary as the bullets are reuiqred fields
         // on the form but this might not work in some browsers
-        issuesList.innerHTML += '<div class="well">'+
+        descriptionHTML.innerHTML += '<div class="well">'+
                                   '<h6>A required bullet point is missing</h6>'+
                                   '</h3>'+'</div>';
       }
       else {
-        issuesList.innerHTML +=   '<div class="well">'+
+        descriptionHTML.innerHTML +=   '<div class="well">'+
                                   '<h6>Description HTML:</h6>'+
                                   '<h3>' + '&lt;p&gt; &lt;ul&gt;' + '<br>' +
                                   '&lt;li&gt;'+ bulletOne +'&lt;&bsol;li&gt;' +'<br>' +
                                   '&lt;li&gt;'+ bulletTwo +'&lt;&bsol;li&gt;' +'<br>' +
+                                  '&lt;li&gt;'+ bulletThree +'&lt;&bsol;li&gt;' +'<br>' +
+                                  '&lt;li&gt;'+ bulletFour +'&lt;&bsol;li&gt;' +'<br>' +
+                                  '&lt;li&gt;'+ bulletFive +'&lt;&bsol;li&gt;' +'<br>' +
+                                  '&lt;li&gt;'+ bulletSix +'&lt;&bsol;li&gt;' +'<br>' +
+                                  '&lt;li&gt;'+ bulletSeven +'&lt;&bsol;li&gt;' +'<br>' +
+                                  '&lt;li&gt;'+ bulletEight +'&lt;&bsol;li&gt;' +'<br>' +
                                   '&lt;&bsol;ul&gt; &lt;&bsol;p&gt;'+'<br>' +
                                   '&lt;p&gt;'+'<br>' +
                                   description +'<br>' +
