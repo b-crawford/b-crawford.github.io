@@ -8,9 +8,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
   </head>
-  <body onload="printDescriptions()">
+  <body>
     <div class="container">
-      <h1> Description builder</h1>
+      <!-- <h1> Description builder</h1> -->
+       <div class="row">
+      <div class="col-md-6">
       <div class="jumbotron">
         <h3>Add New Description:</h3>
         <form id="descInputForm">
@@ -57,11 +59,11 @@
           <button type = 'submit' onclick='preventDefault' class="btn btn-primary">Generate Description</button>
         </form>
       </div>
-      <div class="row">
-        <div class="col-lg-12">
-          <div id="descriptionHTML">
-          </div>
+      </div>
+        <div class="col-md-6">
+          <div id="descriptionHTML"></div>
         </div>
+      </div>
       </div>
       <div class="footer">
       </div>
@@ -123,7 +125,7 @@
 
         var descHTMLText = '<div class="well">'+
                                   '<h6>Description HTML:</h6>'+
-                                  '<h3>' + '&lt;p&gt; &lt;ul&gt;' + '<br>' ;
+                                  '<p>' + '&lt;p&gt; &lt;ul&gt;' + '<br>' ;
 
 
         for (i = 0; i < bullets.length; i++) {
@@ -136,11 +138,14 @@
                                       '&lt;p&gt;'+'<br>' +
                                       description +'<br>' +
                                       '&lt;&bsol;p&gt;'+
-                                      '</h3>'+'</div>';
+                                      '</p>'+'</div>';
 
         descriptionHTML.innerHTML = descHTMLText
 
+
       }
+
+      document.getElementById("descInputForm").reset();
 
     }
 
