@@ -4,10 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title></title>
-    <!-- Bootstrap -->
-    <!-- Latest compiled and minified CSS -->
+    <title>Description builder</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
   </head>
@@ -16,7 +13,7 @@
       <h1> Description builder</h1>
       <div class="jumbotron">
         <h3>Add New Description:</h3>
-        <form id="issueInputForm">
+        <form id="descInputForm">
           <div class="form-group">
             <label for="bulletPointOne">Bullet Point 1</label>
             <input type="text" class="form-control" id="bulletPointOne" placeholder="Required bullet point" required>
@@ -73,7 +70,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="http://chancejs.com/chance.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <!-- <script src="main.js"></script> -->
     <script type="text/javascript">
     document.getElementById("hiddenDiv").style.display = 'none';
 
@@ -86,21 +82,24 @@
       }
     }
 
-    document.getElementById('issueInputForm').addEventListener('submit', generateDescription);
+    document.getElementById('descInputForm').addEventListener('submit', generateDescription);
 
     function generateDescription(e) {
       // prevent the default event handling from happening (a refresh)
       e.preventDefault();
 
-      var bulletOne = document.getElementById('bulletPointOne').value;
-      var bulletTwo = document.getElementById('bulletPointTwo').value;
-      var bulletThree = document.getElementById('bulletPointThree').value;
-      var bulletFour = document.getElementById('bulletPointFour').value;
-      var bulletFive = document.getElementById('bulletPointFive').value;
-      var bulletSix = document.getElementById('bulletPointSix').value;
-      var bulletSeven = document.getElementById('bulletPointSeven').value;
-      var bulletEight = document.getElementById('bulletPointEight').value;
       var description = document.getElementById('description').value;
+
+      var bullets = [
+        document.getElementById('bulletPointOne').value,
+        document.getElementById('bulletPointTwo').value,
+        document.getElementById('bulletPointThree').value,
+        document.getElementById('bulletPointFour').value,
+        document.getElementById('bulletPointFive').value,
+        document.getElementById('bulletPointSix').value,
+        document.getElementById('bulletPointSeven').value,
+        document.getElementById('bulletPointEight').value
+      ];
 
       // var descriptionHTML = document.getElementById('descriptionHTML');
 
@@ -108,35 +107,39 @@
         // if the string is too short then print an error
         // this should be unnesescary as the bullets are reuiqred fields
         // on the form but this might not work in some browsers
-        descriptionHTML.innerHTML += '<div class="well">'+
+        descriptionHTML.innerHTML = '<div class="well">'+
                                   '<h6>Description too short, it must be 30 characters</h6>'+
                                   '</h3>'+'</div>';
       }
-      else if ((bulletOne.length == 0) ||	(bulletTwo.length == 0) ||	(bulletThree.length == 0)) {
+      else if ((bullets[0].length == 0) || (bullets[1].length == 0) ||	(bullets[2].length == 0)) {
         // if any of the required bullets are missing then print an error
         // this should be unnesescary as the bullets are reuiqred fields
         // on the form but this might not work in some browsers
-        descriptionHTML.innerHTML += '<div class="well">'+
+        descriptionHTML.innerHTML = '<div class="well">'+
                                   '<h6>A required bullet point is missing</h6>'+
                                   '</h3>'+'</div>';
       }
       else {
-        descriptionHTML.innerHTML +=   '<div class="well">'+
+
+        var descHTMLText = '<div class="well">'+
                                   '<h6>Description HTML:</h6>'+
-                                  '<h3>' + '&lt;p&gt; &lt;ul&gt;' + '<br>' +
-                                  '&lt;li&gt;'+ bulletOne +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;li&gt;'+ bulletTwo +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;li&gt;'+ bulletThree +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;li&gt;'+ bulletFour +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;li&gt;'+ bulletFive +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;li&gt;'+ bulletSix +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;li&gt;'+ bulletSeven +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;li&gt;'+ bulletEight +'&lt;&bsol;li&gt;' +'<br>' +
-                                  '&lt;&bsol;ul&gt; &lt;&bsol;p&gt;'+'<br>' +
-                                  '&lt;p&gt;'+'<br>' +
-                                  description +'<br>' +
-                                  '&lt;&bsol;p&gt;'+
-                                  '</h3>'+'</div>';
+                                  '<h3>' + '&lt;p&gt; &lt;ul&gt;' + '<br>' ;
+
+
+        for (i = 0; i < bullets.length; i++) {
+          if (bullets[i].length > 0){
+            descHTMLText+= '&lt;li&gt;'+ bullets[i] +'&lt;&bsol;li&gt;' +'<br>' ;
+          }
+        }
+
+        descHTMLText +=  '&lt;&bsol;ul&gt; &lt;&bsol;p&gt;'+'<br>' +
+                                      '&lt;p&gt;'+'<br>' +
+                                      description +'<br>' +
+                                      '&lt;&bsol;p&gt;'+
+                                      '</h3>'+'</div>';
+
+        descriptionHTML.innerHTML = descHTMLText
+
       }
 
     }
