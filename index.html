@@ -130,14 +130,14 @@
 
         for (i = 0; i < bullets.length; i++) {
           if (bullets[i].length > 0){
-            descHTMLText+= '&lt;li&gt;'+ bullets[i] +'&lt;&bsol;li&gt;' +'<br>' ;
+            descHTMLText+= '&lt;li&gt;'+ bullets[i] +'&lt;&#47;li&gt;' +'<br>' ;
           }
         }
 
-        descHTMLText +=  '&lt;&bsol;ul&gt; &lt;&bsol;p&gt;'+'<br>' +
+        descHTMLText +=  '&lt;&#47;ul&gt; &lt;&#47;p&gt;'+'<br>' +
                                       '&lt;p&gt;'+'<br>' +
                                       description +'<br>' +
-                                      '&lt;&bsol;p&gt;'+
+                                      '&lt;&#47;p&gt;'+
                                       '</p>'+'</div>';
 
         descriptionHTML.innerHTML = descHTMLText
