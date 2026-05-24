@@ -1,154 +1,684 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Description builder</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EyeOfTheTiger.AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  </head>
-  <body>
-    <div class="container">
-      <h1> Description builder</h1>
-       <div class="row">
-      <div class="col-md-6">
-      <div class="jumbotron">
-        <h3>Add New Description:</h3>
-        <form id="descInputForm">
-          <div class="form-group">
-            <label for="bulletPointOne">Bullet Point 1</label>
-            <input type="text" class="form-control" id="bulletPointOne" placeholder="Required bullet point" required>
-          </div>
-          <div class="form-group">
-            <label for="bulletPointTwo">Bullet Point 2</label>
-            <input type="text" class="form-control" id="bulletPointTwo" placeholder="Required bullet point" required>
-          </div>
-          <div class="form-group">
-            <label for="bulletPointThree">Bullet Point 3</label>
-            <input type="text" class="form-control" id="bulletPointThree" placeholder="Required bullet point" required>
-          </div>
-          <button onclick="showMore()" class="btn btn-primary">Add additional bullets</button>
-          <div id="hiddenDiv" display="none">
-            <div class="form-group">
-              <label for="bulletPointFour">Bullet Point 4</label>
-              <input type="text" class="form-control" id="bulletPointFour" placeholder="Optional bullet point">
-            </div>
-            <div class="form-group">
-              <label for="bulletPointFive">Bullet Point 5</label>
-              <input type="text" class="form-control" id="bulletPointFive" placeholder="Optional bullet point">
-            </div>
-            <div class="form-group">
-              <label for="bulletPointSix">Bullet Point 6</label>
-              <input type="text" class="form-control" id="bulletPointSix" placeholder="Optional bullet point">
-            </div>
-            <div class="form-group">
-              <label for="bulletPointSeven">Bullet Point 7</label>
-              <input type="text" class="form-control" id="bulletPointSeven" placeholder="Optional bullet point">
-            </div>
-            <div class="form-group">
-              <label for="bulletPointEight">Bullet Point 8</label>
-              <input type="text" class="form-control" id="bulletPointEight" placeholder="Optional bullet point">
-            </div>
-          </div>
-          <br><br>
-          <div class="form-group">
-            <label for="description">Description </label>
-            <input type="text" class="form-control" id="description" placeholder="Description (at least 30 characters)" required minlength="30">
-          </div>
-          <button type = 'submit' onclick='preventDefault' class="btn btn-primary">Generate Description</button>
-        </form>
-      </div>
-      </div>
-        <div class="col-md-6">
-          <div id="descriptionHTML"></div>
-        </div>
-      </div>
-      </div>
-      <div class="footer">
+    :root {
+      --orange: #FF6B00;
+      --orange-light: #FF9500;
+      --dark: #080808;
+      --surface: #111111;
+      --surface-2: #1a1a1a;
+      --border: rgba(255,255,255,0.08);
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --nav-height: 68px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      transition: background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(8,8,8,0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--orange); }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      background: var(--orange);
+      color: #fff !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--orange-light) !important; color: #fff; }
+
+    /* hamburger */
+    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .nav-toggle span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: 0.3s; }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center 30%;
+      background-attachment: fixed;
+      transform: scale(1.05);
+      transition: transform 0.1s linear;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(8,8,8,0.3) 0%,
+        rgba(8,8,8,0.55) 60%,
+        rgba(8,8,8,0.92) 100%
+      );
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      padding: 0 2rem;
+      animation: fadeUp 1s ease both;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,107,0,0.15);
+      border: 1px solid rgba(255,107,0,0.4);
+      color: var(--orange-light);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+    }
+    .hero-title .accent { color: var(--orange); }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(255,255,255,0.65);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--orange-light); transform: translateY(-1px); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+      backdrop-filter: blur(8px);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.14); transform: translateY(-1px); }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: bounce 2s infinite;
+      z-index: 2;
+    }
+    .scroll-hint svg { width: 20px; opacity: 0.5; }
+
+    /* ── SECTIONS SHARED ── */
+    section { padding: 7rem 5%; }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      max-width: 560px;
+    }
+    .divider {
+      width: 48px;
+      height: 3px;
+      background: var(--orange);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--dark); }
+    .about-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .stat-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); }
+    .about-visual {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      background: var(--surface);
+    }
+    .about-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.9;
+    }
+    .about-visual-badge {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      background: rgba(8,8,8,0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1.1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .about-visual-badge strong { color: var(--orange); display: block; font-size: 1.1rem; }
+
+    /* ── SHOP ── */
+    #shop { background: var(--surface); }
+    .shop-inner { max-width: 1100px; margin: 0 auto; }
+    .shop-header { margin-bottom: 3rem; }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .product-card {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,107,0,0.2);
+    }
+    .product-img {
+      aspect-ratio: 4/3;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.85; }
+    .product-tag {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: var(--orange);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 5px;
+    }
+    .product-body { padding: 1.4rem; }
+    .product-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .product-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.2rem; }
+    .product-footer { display: flex; align-items: center; justify-content: space-between; }
+    .product-price { font-weight: 700; font-size: 1.1rem; color: var(--orange-light); }
+    .product-btn {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+    }
+    .product-btn:hover { background: var(--orange-light); }
+
+    /* ── HOW TO SET UP ── */
+    #setup { background: var(--dark); }
+    .setup-inner { max-width: 1100px; margin: 0 auto; }
+    .setup-header { margin-bottom: 3.5rem; }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      transition: border-color 0.25s;
+    }
+    .step-card:hover { border-color: rgba(255,107,0,0.4); }
+    .step-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: rgba(255,107,0,0.15);
+      line-height: 1;
+      margin-bottom: 1rem;
+      user-select: none;
+    }
+    .step-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,107,0,0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    .step-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .step-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+    .setup-footer { margin-top: 3rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+      text-decoration: none;
+    }
+    .footer-logo span { color: var(--orange); }
+    .footer-links { display: flex; gap: 2rem; list-style: none; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
+    .footer-copy { color: var(--text-muted); font-size: 0.82rem; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      section { padding: 5rem 6%; }
+      .about-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .about-visual { aspect-ratio: 16/9; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: var(--nav-height); left: 0; right: 0; background: rgba(8,8,8,0.96); backdrop-filter: blur(18px); padding: 1.5rem 5%; gap: 1.5rem; border-top: 1px solid var(--border); }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: flex; }
+      .nav-cta { display: none; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">Eye<span>Of</span>TheTiger<span>.AI</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#shop">Shop</a></li>
+      <li><a href="#setup">Set Up</a></li>
+    </ul>
+    <div class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+<h1 class="hero-title">
+        Eye<span class="accent">Of</span>TheTiger<span class="accent">.AI</span>
+      </h1>
+      <p class="hero-sub">Unleash your edge. Built for those who refuse to settle — intelligent tools forged with instinct and precision.</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn-primary">Explore Shop</a>
+        <a href="#about" class="btn-ghost">Learn More</a>
       </div>
     </div>
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </div>
+  </section>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- <script src="http://chancejs.com/chance.min.js"></script> -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-    document.getElementById("hiddenDiv").style.display = 'none';
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-inner">
+      <div class="reveal">
+        <p class="section-label">Who We Are</p>
+        <div class="divider"></div>
+        <h2 class="section-title">Intelligence with the instinct of a predator</h2>
+        <p class="section-desc">EyeOfTheTiger.AI combines cutting-edge artificial intelligence with raw, focused power. We build tools that give you the precision and drive to dominate your field.</p>
+        <div class="about-stats">
+          <div class="stat-card">
+            <div class="stat-number">10K+</div>
+            <div class="stat-label">Active Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">99%</div>
+            <div class="stat-label">Satisfaction Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">AI Support</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Integrations</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-visual reveal">
+        <img src="https://images.unsplash.com/photo-1508817628294-5a453fa0b8fb?auto=format&fit=crop&w=800&q=80" alt="Tiger">
+        <div class="about-visual-badge">
+          <strong>Est. 2024</strong>
+          EyeOfTheTiger.AI
+        </div>
+      </div>
+    </div>
+  </section>
 
-    function showMore() {
-      var x = document.getElementById("hiddenDiv");
-      if (x.style.display === "none") {
-        x.style.display = "block";
-      } else {
-        x.style.display = "none";
-      }
-    }
+  <!-- SHOP -->
+  <section id="shop">
+    <div class="shop-inner">
+      <div class="shop-header reveal">
+        <p class="section-label">Our Products</p>
+        <div class="divider"></div>
+        <h2 class="section-title">Everything you need to stay ahead</h2>
+        <p class="section-desc">Premium AI-powered products crafted for performance. Pick your edge.</p>
+      </div>
+      <div class="product-grid">
+        <div class="product-card reveal">
+          <div class="product-img">
+            <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=600&q=80" alt="AI Core">
+            <span class="product-tag">Popular</span>
+          </div>
+          <div class="product-body">
+            <div class="product-name">Tiger Core AI</div>
+            <div class="product-desc">Our flagship AI assistant. Razor-sharp responses, built for professionals who move fast.</div>
+            <div class="product-footer">
+              <span class="product-price">£29/mo</span>
+              <a href="#" class="product-btn">Buy Now</a>
+            </div>
+          </div>
+        </div>
+        <div class="product-card reveal">
+          <div class="product-img">
+            <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=600&q=80" alt="AI Pro">
+            <span class="product-tag">New</span>
+          </div>
+          <div class="product-body">
+            <div class="product-name">Tiger Pro Suite</div>
+            <div class="product-desc">Full-stack AI toolkit with automation, analytics, and multi-model support for teams.</div>
+            <div class="product-footer">
+              <span class="product-price">£79/mo</span>
+              <a href="#" class="product-btn">Buy Now</a>
+            </div>
+          </div>
+        </div>
+        <div class="product-card reveal">
+          <div class="product-img">
+            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80" alt="API Access">
+          </div>
+          <div class="product-body">
+            <div class="product-name">API Access</div>
+            <div class="product-desc">Integrate Tiger intelligence directly into your own applications via our REST API.</div>
+            <div class="product-footer">
+              <span class="product-price">From £9/mo</span>
+              <a href="#" class="product-btn">Buy Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    document.getElementById('descInputForm').addEventListener('submit', generateDescription);
+  <!-- HOW TO SET UP -->
+  <section id="setup">
+    <div class="setup-inner">
+      <div class="setup-header reveal">
+        <p class="section-label">Get Started</p>
+        <div class="divider"></div>
+        <h2 class="section-title">Set up in four simple steps</h2>
+        <p class="section-desc">No complexity. No waiting. From unboxing to unleashed in minutes.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card reveal">
+          <div class="step-number">01</div>
+          <div class="step-icon">🛒</div>
+          <div class="step-title">Order an Eye of the Tiger</div>
+          <div class="step-desc">Pick your unit from our shop and place your order. Ships fast, straight to your door.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">02</div>
+          <div class="step-icon">🔌</div>
+          <div class="step-title">Plug In</div>
+          <div class="step-desc">Power it on. One cable, zero fuss — your device is ready the moment it's connected.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">03</div>
+          <div class="step-icon">⚡</div>
+          <div class="step-title">Connect Your AI Model in Seconds</div>
+          <div class="step-desc">Link your preferred AI model through our simple on-device interface. No technical knowledge required.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">04</div>
+          <div class="step-icon">🐯</div>
+          <div class="step-title">Go</div>
+          <div class="step-desc">That's it. You're live. Eyes sharp, claws out — go do what you do.</div>
+        </div>
+      </div>
+      <div class="setup-footer reveal">
+        <a href="setup.html" class="btn-ghost">
+          Full instructions
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="margin-left:0.4rem;vertical-align:middle"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
 
-    function generateDescription(e) {
-      // prevent the default event handling from happening (a refresh)
-      e.preventDefault();
+  <!-- FOOTER -->
+  <footer>
+    <a href="#hero" class="footer-logo">Eye<span>Of</span>TheTiger<span>.AI</span></a>
+    <ul class="footer-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#shop">Shop</a></li>
+      <li><a href="#setup">Set Up</a></li>
+    </ul>
+    <span class="footer-copy">&copy; 2024 EyeOfTheTiger.AI — All rights reserved.</span>
+  </footer>
 
-      var description = document.getElementById('description').value;
+  <script>
+    // Nav scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
 
-      var bullets = [
-        document.getElementById('bulletPointOne').value,
-        document.getElementById('bulletPointTwo').value,
-        document.getElementById('bulletPointThree').value,
-        document.getElementById('bulletPointFour').value,
-        document.getElementById('bulletPointFive').value,
-        document.getElementById('bulletPointSix').value,
-        document.getElementById('bulletPointSeven').value,
-        document.getElementById('bulletPointEight').value
-      ];
+    // Parallax hero
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      heroBg.style.transform = `scale(1.05) translateY(${y * 0.25}px)`;
+    }, { passive: true });
 
-      // var descriptionHTML = document.getElementById('descriptionHTML');
+    // Mobile nav toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
 
-      if (description.length < 30){
-        // if the string is too short then print an error
-        // this should be unnesescary as the bullets are reuiqred fields
-        // on the form but this might not work in some browsers
-        descriptionHTML.innerHTML = '<div class="well">'+
-                                  '<h6>Description too short, it must be 30 characters</h6>'+
-                                  '</h3>'+'</div>';
-      }
-      else if ((bullets[0].length == 0) || (bullets[1].length == 0) ||	(bullets[2].length == 0)) {
-        // if any of the required bullets are missing then print an error
-        // this should be unnesescary as the bullets are reuiqred fields
-        // on the form but this might not work in some browsers
-        descriptionHTML.innerHTML = '<div class="well">'+
-                                  '<h6>A required bullet point is missing</h6>'+
-                                  '</h3>'+'</div>';
-      }
-      else {
-
-        var descHTMLText = '<div class="well">'+
-                                  '<h6>Description HTML:</h6>'+
-                                  '<p>' + '&lt;p&gt; &lt;ul&gt;' + '<br>' ;
-
-
-        for (i = 0; i < bullets.length; i++) {
-          if (bullets[i].length > 0){
-            descHTMLText+= '&lt;li&gt;'+ bullets[i] +'&lt;&#47;li&gt;' +'<br>' ;
-          }
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
         }
-
-        descHTMLText +=  '&lt;&#47;ul&gt; &lt;&#47;p&gt;'+'<br>' +
-                                      '&lt;p&gt;'+'<br>' +
-                                      description +'<br>' +
-                                      '&lt;&#47;p&gt;'+
-                                      '</p>'+'</div>';
-
-        descriptionHTML.innerHTML = descHTMLText
-
-
-      }
-
-      document.getElementById("descInputForm").reset();
-
-    }
-
-    </script>
-  </body>
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
 </html>
